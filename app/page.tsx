@@ -167,7 +167,7 @@ export default function ApplePortfolioWebsite() {
   </div>
 
   <iframe
-    src="https://open.spotify.com/embed/playlist/5YhjEIWz3B8QGIeJFrV9wN?utm_source=generator"
+    src="https://open.spotify.com/embed/playlist/37i9dQZF1E378BjBmmCagl?utm_source=generator"
     width="100%"
     height="352"
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
