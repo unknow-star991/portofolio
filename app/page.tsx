@@ -22,7 +22,8 @@ export default function ApplePortfolioWebsite() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [musicFile, setMusicFile] = useState<string | null>(null)
   const [mobileMenu, setMobileMenu] = useState(false)
-  const [mobileMenu, setMobileMenu] = useState(false)
+  const [loading, setLoading] = useState(true)
+
 
   /* SMOOTH SCROLL */
   useEffect(() => {
@@ -124,7 +125,7 @@ export default function ApplePortfolioWebsite() {
             duration: 20,
             repeat: Infinity,
           }}
-          className="absolute top-20 left-20 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[160px]"
+          className="absolute top-20 left-20 w-125 h-[500px] bg-cyan-500/10 rounded-full blur-[160px]"
         />
 
         <motion.div
@@ -612,7 +613,7 @@ export default function ApplePortfolioWebsite() {
                 transition={{ duration: 0.4 }}
                 className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 backdrop-blur-2xl p-10"
               >
-                <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-white/20 to-transparent" />
+                <div className="absolute inset-0 opacity-20 bg-linear-to-br from-white/20 to-transparent" />
 
                 <div className="relative z-10">
                   <p className="text-zinc-500 text-sm mb-4">
