@@ -142,12 +142,11 @@ export default function ApplePortfolioWebsite() {
         />
       </div>
 
-      <main
-        className={`${
-          darkMode ? 'bg-black text-white' : 'bg-white text-black'
-        } transition-all duration-700 overflow-hidden`}
-        pb-48 sm:pb-0
-      >
+     <main
+  className={`${
+    darkMode ? 'bg-black text-white' : 'bg-white text-black'
+  } transition-all duration-700 overflow-hidden pb-48 sm:pb-0`}
+>
         {/* AURORA BACKGROUND */}
         <div className="fixed inset-0 -z-10 overflow-hidden">
           <div className="absolute top-0 left-1/3 w-[700px] h-[700px] bg-purple-500 opacity-20 blur-[200px] animate-pulse rounded-full" />
@@ -155,7 +154,7 @@ export default function ApplePortfolioWebsite() {
           <div className="absolute bottom-0 right-1/3 w-[600px] h-[600px] bg-blue-500 opacity-20 blur-[200px] animate-pulse rounded-full" />
         </div>
 
-     {/* SPOTIFY TOGGLE */}
+              {/* SPOTIFY TOGGLE */}
     <div className="fixed bottom-4 right-4 z-50">
   <button
     onClick={() => setShowSpotify(!showSpotify)}
