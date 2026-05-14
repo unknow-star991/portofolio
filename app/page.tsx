@@ -23,6 +23,7 @@ export default function ApplePortfolioWebsite() {
   const [musicFile, setMusicFile] = useState<string | null>(null)
   const [mobileMenu, setMobileMenu] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [showSpotify, setShowSpotify] = useState(false)
 
 
   /* SMOOTH SCROLL */
@@ -145,6 +146,7 @@ export default function ApplePortfolioWebsite() {
         className={`${
           darkMode ? 'bg-black text-white' : 'bg-white text-black'
         } transition-all duration-700 overflow-hidden`}
+        pb-48 sm:pb-0
       >
         {/* AURORA BACKGROUND */}
         <div className="fixed inset-0 -z-10 overflow-hidden">
@@ -153,27 +155,47 @@ export default function ApplePortfolioWebsite() {
           <div className="absolute bottom-0 right-1/3 w-[600px] h-[600px] bg-blue-500 opacity-20 blur-[200px] animate-pulse rounded-full" />
         </div>
 
-        {/* SPOTIFY PLAYER */}
-<div className="fixed bottom-4 right-4 left-4 sm:left-auto z-50 w-auto sm:w-[350px] rounded-[2rem] overflow-hidden border border-white/10 bg-black/40 backdrop-blur-2xl shadow-[0_10px_80px_rgba(0,0,0,0.5)]">
-  
-  <div className="p-4 border-b border-white/10">
-    <p className="text-white font-semibold">
-      ARI Playlist
-    </p>
+       {/* SPOTIFY TOGGLE */}
+<div className="fixed bottom-4 right-4 z-50">
 
-    <p className="text-zinc-400 text-sm">
-      Music & Memories ✨
-    </p>
-  </div>
+  {/* TOGGLE BUTTON */}
+  <button
+    onClick={() => setShowSpotify(!showSpotify)}
+    className="mb-3 ml-auto flex items-center gap-2 px-4 py-3 rounded-full bg-black/70 backdrop-blur-2xl border border-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
+  >
+    <Music2 size={18} />
 
-  <iframe
-    src="https://open.spotify.com/embed/playlist/37i9dQZF1E378BjBmmCagl?utm_source=generator"
-    width="100%"
-    height="352"
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy"
-    className="rounded-b-[2rem]"
-  />
+    {showSpotify ? 'Hide Music' : 'Open Music'}
+  </button>
+
+  {/* PLAYER */}
+  {showSpotify && (
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0 }}
+      className="w-[320px] sm:w-[350px] rounded-[2rem] overflow-hidden border border-white/10 bg-black/40 backdrop-blur-2xl shadow-[0_10px_80px_rgba(0,0,0,0.5)]"
+    >
+      <div className="p-4 border-b border-white/10">
+        <p className="text-white font-semibold">
+          ARI Playlist
+        </p>
+
+        <p className="text-zinc-400 text-sm">
+          Music & Memories ✨
+        </p>
+      </div>
+
+      <iframe
+        src="https://open.spotify.com/embed/playlist/37i9dQZF1E378BjBmmCagl"
+        width="100%"
+        height="152"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+        className="rounded-b-[2rem]"
+      />
+    </motion.div>
+  )}
 </div>
 
         {/* NAVBAR */}
@@ -245,7 +267,7 @@ export default function ApplePortfolioWebsite() {
                 rotate: 1,
               }}
               whileTap={{ scale: 0.95 }}
-              className="mt-10 px-10 py-5 rounded-full bg-white text-black font-semibold shadow-[0_10px_80px_rgba(255,255,255,0.2)] relative overflow-hidden group"
+              className="mt-10 px-7 py-4 sm:px-10 sm:py-5 rounded-full bg-white text-black font-semibold shadow-[0_10px_80px_rgba(255,255,255,0.2)] relative overflow-hidden group"
             >
               <span className="relative z-10">
                 Explore More
