@@ -10,16 +10,19 @@ import {
   Sun,
   Music2,
   Camera,
- Mail,
+  Mail,
   Phone,
- ChevronDown,
+  ChevronDown,
+  Menu,
+  X,
 } from 'lucide-react'
 
 export default function ApplePortfolioWebsite() {
   const [darkMode, setDarkMode] = useState(true)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [musicFile, setMusicFile] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [mobileMenu, setMobileMenu] = useState(false)
+  const [mobileMenu, setMobileMenu] = useState(false)
 
   /* SMOOTH SCROLL */
   useEffect(() => {
@@ -150,7 +153,7 @@ export default function ApplePortfolioWebsite() {
         </div>
 
         {/* SPOTIFY PLAYER */}
-<div className="fixed bottom-6 right-6 z-50 w-[350px] rounded-[2rem] overflow-hidden border border-white/10 bg-black/40 backdrop-blur-2xl shadow-[0_10px_80px_rgba(0,0,0,0.5)]">
+<div className="fixed bottom-4 right-4 left-4 sm:left-auto z-50 w-auto sm:w-[350px] rounded-[2rem] overflow-hidden border border-white/10 bg-black/40 backdrop-blur-2xl shadow-[0_10px_80px_rgba(0,0,0,0.5)]">
   
   <div className="p-4 border-b border-white/10">
     <p className="text-white font-semibold">
@@ -179,7 +182,7 @@ export default function ApplePortfolioWebsite() {
               ARI
             </h1>
 
-            <div className="hidden md:flex gap-8 text-sm">
+            <div className="hidden lg:flex gap-8 text-sm">
               <a href="#about">About</a>
               <a href="#gallery">Gallery</a>
               <a href="#timeline">Timeline</a>
@@ -450,7 +453,7 @@ export default function ApplePortfolioWebsite() {
       My Works
     </p>
 
-    <h2 className="text-6xl md:text-8xl font-black bg-gradient-to-b from-white via-zinc-300 to-zinc-600 text-transparent bg-clip-text">
+    <h2 className="text-4xl sm:text-6xl md:text-8xl font-black bg-gradient-to-b from-white via-zinc-300 to-zinc-600 text-transparent bg-clip-text">
       Featured Projects.
     </h2>
 
@@ -461,7 +464,7 @@ export default function ApplePortfolioWebsite() {
   </motion.div>
 
   {/* PROJECT GRID */}
-  <div className="grid md:grid-cols-2 gap-10 relative z-10">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 relative z-10">
 
     {[
       {
@@ -663,7 +666,7 @@ export default function ApplePortfolioWebsite() {
               Jika ingin mengenal lebih dekat atau bekerja sama.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6">
 
   {/* INSTAGRAM */}
   <motion.a
@@ -711,7 +714,7 @@ export default function ApplePortfolioWebsite() {
         </section>
 
         {/* FOOTER */}
-        <footer className="border-t border-white/10 py-10 text-center text-zinc-500">
+        <footer className="border-t border-white/10 py-10 px-6 text-center text-zinc-500">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Music2 size={18} />
             <p>Music & Memories</p>

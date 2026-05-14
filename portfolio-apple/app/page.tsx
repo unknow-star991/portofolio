@@ -191,6 +191,11 @@ export default function ApplePortfolioWebsite() {
               <a href="#blog">Blog</a>
               <a href="#contact">Contact</a>
             </div>
+            <button
+              onClick={() => setMobileMenu(!mobileMenu)}
+                className="lg:hidden p-3 rounded-full border border-white/10">
+                {mobileMenu ? <X size={18} /> : <Menu size={18} />}
+            </button>
 
             <button
               onClick={() => setDarkMode(!darkMode)}
@@ -200,7 +205,21 @@ export default function ApplePortfolioWebsite() {
             </button>
           </div>
         </nav>
-
+        {mobileMenu && (
+  <motion.div
+    initial={{ opacity: 0, y: -30 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="fixed top-24 left-4 right-4 z-40 lg:hidden rounded-[2rem] bg-black/80 backdrop-blur-2xl border border-white/10 p-8"
+  >
+    <div className="flex flex-col gap-6 text-center text-lg">
+      <a href="#about">About</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#blog">Blog</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </motion.div>
+)}
         {/* HERO */}
         <section className="relative h-screen overflow-hidden flex items-center justify-center">
           <motion.div
@@ -231,11 +250,11 @@ export default function ApplePortfolioWebsite() {
               Creative Developer
             </p>
 
-            <h1 className="text-7xl md:text-[10rem] font-black leading-none bg-gradient-to-b from-white via-zinc-300 to-zinc-600 text-transparent bg-clip-text">
+            <h1 className="text-5xl sm:text-7xl md:text-[10rem] font-black leading-none bg-gradient-to-b from-white via-zinc-300 to-zinc-600 text-transparent bg-clip-text">
               ARI
             </h1>
 
-            <p className="max-w-2xl mx-auto mt-8 text-zinc-300 text-xl leading-relaxed">
+            <p className="max-w-2xl mx-auto mt-8 text-zinc-300 text-base sm:text-lg md:text-xl leading-relaxed px-4">
               Building cinematic digital experiences with emotion,
               memories, and futuristic design.
             </p>
@@ -279,7 +298,7 @@ export default function ApplePortfolioWebsite() {
           id="about"
           className="max-w-7xl mx-auto px-6 py-40"
         >
-          <div className="grid md:grid-cols-2 gap-20 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
             <motion.img
               whileHover={{ scale: 1.03 }}
               src="/images/profile.jpeg"
@@ -291,7 +310,7 @@ export default function ApplePortfolioWebsite() {
                 About Me
               </p>
 
-              <h2 className="text-6xl font-black leading-tight mb-8">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight mb-8">
                 A Creative Mind
                 <br />
                 With Beautiful
@@ -313,7 +332,7 @@ export default function ApplePortfolioWebsite() {
           className="max-w-5xl mx-auto px-6 py-32"
         >
           <div className="text-center mb-20">
-            <h2 className="text-6xl font-black">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black">
               Life Timeline
             </h2>
           </div>
@@ -358,7 +377,7 @@ export default function ApplePortfolioWebsite() {
           className="max-w-7xl mx-auto px-6 py-32"
         >
           <div className="text-center mb-16">
-            <h2 className="text-7xl font-black mb-5 bg-gradient-to-b from-white to-zinc-500 text-transparent bg-clip-text">
+            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black mb-5 bg-gradient-to-b from-white to-zinc-500 text-transparent bg-clip-text">
               Gallery
             </h2>
 
@@ -402,7 +421,7 @@ export default function ApplePortfolioWebsite() {
           )}
 
           {/* GALLERY GRID */}
-          <div className="grid md:grid-cols-3 gap-8 perspective-[2000px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 perspective-[2000px]">
             {gallery.map((img, index) => (
               <motion.div
                 key={index}
@@ -416,7 +435,7 @@ export default function ApplePortfolioWebsite() {
               >
                 <img
                   src={img}
-                  className="w-full h-[500px] object-cover group-hover:scale-110 transition duration-700"
+                  className="w-full h-[300px] sm:h-[400px] md:h-[500px] object-cover group-hover:scale-110 transition duration-700"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition" />
