@@ -1,6 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import Lenis from 'lenis'
 import AIAssistant from '@/components/AIAssistant'
@@ -17,6 +16,12 @@ import {
   X,
 } from 'lucide-react'
 
+import {
+  motion,
+  useScroll,
+  useSpring,
+} from 'framer-motion'
+
 export default function ApplePortfolioWebsite() {
   const [darkMode, setDarkMode] = useState(true)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
@@ -24,7 +29,19 @@ export default function ApplePortfolioWebsite() {
   const [mobileMenu, setMobileMenu] = useState(false)
   const [loading, setLoading] = useState(true)
   const [showSpotify, setShowSpotify] = useState(false)
+  const [activeSection, setActiveSection] = useState('about')
+  const [navbarSmall, setNavbarSmall] = useState(false)
 
+
+
+  
+  /* SCROLL PROGRESS */
+const { scrollYProgress } = useScroll()
+
+const scaleX = useSpring(scrollYProgress, {
+  stiffness: 120,
+  damping: 20,
+})
 
   /* SMOOTH SCROLL */
   useEffect(() => {
@@ -36,6 +53,51 @@ export default function ApplePortfolioWebsite() {
     }
 
     requestAnimationFrame(raf)
+
+/* ACTIVE SECTION */
+useEffect(() => {
+  const sections = [
+    'about',
+    'gallery',
+    'timeline',
+    'blog',
+    'contact',
+  ]
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id)
+        }
+      })
+    },
+    {
+      threshold: 0.6,
+    }
+  )
+
+  sections.forEach((id) => {
+    const section = document.getElementById(id)
+
+    if (section) observer.observe(section)
+  })
+
+
+  return () => observer.disconnect()
+}, [])
+
+/* NAVBAR RESIZE */
+useEffect(() => {
+  const handleScroll = () => {
+    setNavbarSmall(window.scrollY > 50)
+  }
+
+  window.addEventListener('scroll', handleScroll)
+
+  return () =>
+    window.removeEventListener('scroll', handleScroll)
+}, [])
 
     return () => {
       lenis.destroy()
@@ -89,6 +151,8 @@ export default function ApplePortfolioWebsite() {
     '/images/7.jpeg',
     '/images/45.jpeg',
   ]
+
+  
 
   if (loading) {
     return (
@@ -192,29 +256,149 @@ export default function ApplePortfolioWebsite() {
             )}
         </div>
 
-        {/* NAVBAR */}
-        <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
-          <div className="bg-white/5 border border-white/10 backdrop-blur-2xl rounded-full px-8 py-4 flex items-center justify-between shadow-[0_10px_80px_rgba(0,0,0,0.5)]">
-            <h1 className="font-black text-xl tracking-wide">
-              ARI
-            </h1>
+        {/* SCROLL PROGRESS */}
+<motion.div
+  style={{ scaleX }}
+  className="fixed top-0 left-0 right-0 h-[3px] origin-left z-[999]
+  bg-gradient-to-r from-white via-zinc-400 to-white"
+/>
 
-            <div className="hidden lg:flex gap-8 text-sm">
-              <a href="#about">About</a>
-              <a href="#gallery">Gallery</a>
-              <a href="#timeline">Timeline</a>
-              <a href="#blog">Blog</a>
-              <a href="#contact">Contact</a>
-            </div>
+{/* DYNAMIC ISLAND NAVBAR */}
+<motion.nav
+  animate={{
+    width: navbarSmall ? '430px' : '780px',
+    paddingTop: navbarSmall ? '12px' : '18px',
+    paddingBottom: navbarSmall ? '12px' : '18px',
+    y: navbarSmall ? 8 : 18,
+  }}
+  transition={{
+    type: 'spring',
+    stiffness: 120,
+    damping: 18,
+  }}
+  className="
+  fixed left-1/2 -translate-x-1/2 z-50
+  top-2
+  rounded-full
+  border border-white/10
+  bg-white/5
+  backdrop-blur-3xl
+  shadow-[0_10px_80px_rgba(0,0,0,0.45)]
+  overflow-hidden
+  "
+>
+  <div className="flex items-center justify-between px-8">
+    {/* LOGO */}
+    <motion.h1
+      whileHover={{
+        scale: 1.08,
+      }}
+      className="font-black text-xl tracking-[0.2em]"
+    >
+      ARI
+    </motion.h1>
 
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-3 rounded-full border border-white/10 backdrop-blur-xl"
+    {/* MENU */}
+    <div className="hidden lg:flex items-center gap-3">
+      {[
+        'about',
+        'gallery',
+        'timeline',
+        'blog',
+        'contact',
+      ].map((item) => {
+        const active = activeSection === item
+
+        return (
+          <a
+            key={item}
+            href={`#${item}`}
+            className="group relative"
+          >
+            <motion.div
+              whileHover={{
+                y: -6,
+                scale: 1.05,
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 12,
+              }}
+              className={`
+              relative px-5 py-3 rounded-full
+              capitalize text-sm font-medium
+              transition-all duration-300
+              ${
+                active
+                  ? 'bg-white text-black'
+                  : 'text-white hover:bg-white/10'
+              }
+              `}
             >
-              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
-        </nav>
+              {item}
+
+              {/* ACTIVE PILL */}
+              {active && (
+                <motion.div
+                  layoutId="navbar-pill"
+                  className="
+                  absolute inset-0
+                  rounded-full
+                  bg-white
+                  -z-10
+                  "
+                  transition={{
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 30,
+                  }}
+                />
+              )}
+            </motion.div>
+
+            {/* MAC DOCK LIGHT */}
+            <div
+              className="
+              absolute left-1/2 top-full
+              -translate-x-1/2
+              w-2 h-2 rounded-full
+              bg-white/60 blur-sm
+              opacity-0 group-hover:opacity-100
+              transition-all duration-300
+              mt-2
+              "
+            />
+          </a>
+        )
+      })}
+    </div>
+
+    {/* DARK MODE */}
+    <motion.button
+      whileHover={{
+        rotate: 180,
+        scale: 1.1,
+      }}
+      whileTap={{
+        scale: 0.9,
+      }}
+      onClick={() => setDarkMode(!darkMode)}
+      className="
+      p-3 rounded-full
+      border border-white/10
+      bg-white/5
+      backdrop-blur-xl
+      "
+    >
+      {darkMode ? (
+        <Sun size={18} />
+      ) : (
+        <Moon size={18} />
+      )}
+    </motion.button>
+  </div>
+</motion.nav>
 
         {/* HERO */}
         <section className="relative h-screen overflow-hidden flex items-center justify-center">
