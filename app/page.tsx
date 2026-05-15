@@ -34,7 +34,7 @@ export default function ApplePortfolioWebsite() {
 
 
 
-  
+
   /* SCROLL PROGRESS */
 const { scrollYProgress } = useScroll()
 
@@ -42,17 +42,21 @@ const scaleX = useSpring(scrollYProgress, {
   stiffness: 120,
   damping: 20,
 })
+/* SMOOTH SCROLL */
+useEffect(() => {
+  const lenis = new Lenis()
 
-  /* SMOOTH SCROLL */
-  useEffect(() => {
-    const lenis = new Lenis()
-
-    function raf(time: number) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
-
+  function raf(time: number) {
+    lenis.raf(time)
     requestAnimationFrame(raf)
+  }
+
+  requestAnimationFrame(raf)
+
+  return () => {
+    lenis.destroy()
+  }
+}, [])
 
 /* ACTIVE SECTION */
 useEffect(() => {
@@ -83,7 +87,6 @@ useEffect(() => {
     if (section) observer.observe(section)
   })
 
-
   return () => observer.disconnect()
 }, [])
 
@@ -95,14 +98,10 @@ useEffect(() => {
 
   window.addEventListener('scroll', handleScroll)
 
-  return () =>
+  return () => {
     window.removeEventListener('scroll', handleScroll)
+  }
 }, [])
-
-    return () => {
-      lenis.destroy()
-    }
-  }, [])
 
   /* LOADING */
   useEffect(() => {
