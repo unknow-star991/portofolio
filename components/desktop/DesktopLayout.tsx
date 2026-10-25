@@ -1,234 +1,160 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-
 import Lenis from 'lenis'
+import { motion, useScroll, useSpring } from 'framer-motion'
+import { ArrowUp } from 'lucide-react'
 
-import {
-  motion,
-  useScroll,
-  useSpring,
-} from 'framer-motion'
+import AestheticNavbar from '@/components/aesthetic/AestheticNavbar'
+import AestheticHero from '@/components/aesthetic/AestheticHero'
+import AestheticHighlights from '@/components/aesthetic/AestheticHighlights'
+import AestheticProjects from '@/components/aesthetic/AestheticProjects'
+import AestheticAbout from '@/components/aesthetic/AestheticAbout'
+import AestheticTimeline from '@/components/aesthetic/AestheticTimeline'
+import CinematicGallery from '@/components/cinematic/CinematicGallery'
+import AestheticContact from '@/components/aesthetic/AestheticContact'
+import BackgroundVideo from '@/components/aesthetic/BackgroundVideo'
+import CommandPalette from '@/components/cinematic/CommandPalette'
 
-import { Music2 } from 'lucide-react'
-
-import DesktopNavbar from './DesktopNavbar'
-import DesktopHero from './DesktopHero'
-import DesktopGallery from './DesktopGallery'
-import DesktopProjects from './DesktopProjects'
-import DesktopAbout from './DesktopAbout'
-import DesktopTimeline from './DesktopTimeline'
-import DesktopBlog from './DesktopBlog'
-import DesktopContact from './DesktopContact'
-
-import AIAssistant from '@/components/AIAssistant'
+import { portfolioConfig } from '@/data/portfolio'
+import { smoothScrollTo } from '@/lib/scroll'
+import { sound } from '@/lib/audio'
 
 export default function DesktopLayout() {
-  /* STATES */
-  const [darkMode, setDarkMode] = useState(true)
-
-  const [uploadedImage, setUploadedImage] =
-    useState<string | null>(null)
-
-  const [navbarSmall, setNavbarSmall] =
-    useState(false)
-
-  const [activeSection, setActiveSection] =
-    useState('about')
-
-  const [showSpotify, setShowSpotify] =
-    useState(false)
-
+  const [navbarSmall, setNavbarSmall] = useState(false)
+  const [activeSection, setActiveSection] = useState('hero')
   const [loading, setLoading] = useState(true)
-
-  /* GALLERY */
-  const gallery = [
-    '/images/4.jpeg',
-    '/images/6.jpeg',
-    '/images/8.jpeg',
-    '/images/7.jpeg',
-    '/images/45.jpeg',
-  ]
+  const [commandOpen, setCommandOpen] = useState(false)
+  const [showBackToTop, setShowBackToTop] = useState(false)
 
   /* SCROLL PROGRESS */
   const { scrollYProgress } = useScroll()
-
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 120,
     damping: 20,
   })
 
-  /* SMOOTH SCROLL */
+  /* LENIS SMOOTH SCROLL WITH PROPER RAF CLEANUP */
   useEffect(() => {
-    const lenis = new Lenis()
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      touchMultiplier: 1.6,
+      infinite: false,
+    })
 
+    // Store globally for smoothScrollTo helper
+    ;(window as unknown as { __lenis?: Lenis }).__lenis = lenis
+
+    let rafId: number
     function raf(time: number) {
       lenis.raf(time)
-      requestAnimationFrame(raf)
+      rafId = requestAnimationFrame(raf)
     }
 
-    requestAnimationFrame(raf)
+    rafId = requestAnimationFrame(raf)
 
     return () => {
+      cancelAnimationFrame(rafId)
       lenis.destroy()
+      delete (window as unknown as { __lenis?: Lenis }).__lenis
     }
   }, [])
 
-  /* ACTIVE SECTION */
- useEffect(() => {
-  const sections = [
-    'about',
-    'gallery',
-    'timeline',
-    'projects',
-    'blog',
-    'contact',
-  ]
-
-  const handleScroll = () => {
-    const scrollPosition =
-      window.scrollY + window.innerHeight / 3
-
-    sections.forEach((id) => {
-      const section =
-        document.getElementById(id)
-
-      if (!section) return
-
-      const top = section.offsetTop
-      const bottom = top + section.offsetHeight
-
-      if (
-        scrollPosition >= top &&
-        scrollPosition < bottom
-      ) {
-        setActiveSection(id)
-      }
-    })
-  }
-
-  window.addEventListener(
-    'scroll',
-    handleScroll
-  )
-
-  handleScroll()
-
-  return () => {
-    window.removeEventListener(
-      'scroll',
-      handleScroll
-    )
-  }
-}, [])
-
-  /* NAVBAR RESIZE */
+  /* ACTIVE SECTION OBSERVER */
   useEffect(() => {
+    const sections = ['hero', 'highlights', 'projects', 'about', 'timeline', 'gallery', 'contact']
+
     const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight / 3
+
+      sections.forEach((id) => {
+        const section = document.getElementById(id)
+        if (!section) return
+
+        const top = section.offsetTop
+        const bottom = top + section.offsetHeight
+
+        if (scrollPosition >= top && scrollPosition < bottom) {
+          setActiveSection(id)
+        }
+      })
+
       setNavbarSmall(window.scrollY > 50)
+      setShowBackToTop(window.scrollY > 400)
     }
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
 
-    return () => {
-      window.removeEventListener(
-        'scroll',
-        handleScroll
-      )
-    }
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  /* LOADING */
+  /* MINIMAL REFINED INTRO SCREEN */
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false)
-    }, 2500)
+    }, 750)
 
     return () => clearTimeout(timer)
   }, [])
 
-  /* CURSOR GLOW */
+  /* MOUSE SPOTLIGHT AMBIENT GLOW (DESKTOP FINE POINTER ONLY) */
   useEffect(() => {
-    const glow = document.createElement('div')
+    if (typeof window === 'undefined') return
+    const isFinePointer = window.matchMedia('(pointer: fine)').matches
+    if (!isFinePointer) return
 
-    glow.style.width = '350px'
-    glow.style.height = '350px'
+    const glow = document.createElement('div')
+    glow.style.width = '420px'
+    glow.style.height = '420px'
     glow.style.position = 'fixed'
     glow.style.borderRadius = '999px'
     glow.style.pointerEvents = 'none'
-
-    glow.style.background = darkMode
-      ? 'rgba(255,255,255,0.08)'
-      : 'rgba(0,0,0,0.08)'
-
-    glow.style.filter = 'blur(120px)'
-    glow.style.zIndex = '9999'
+    glow.style.background =
+      'radial-gradient(circle, rgba(245,199,108,0.05) 0%, rgba(56,189,248,0.025) 50%, transparent 70%)'
+    glow.style.filter = 'blur(75px)'
+    glow.style.zIndex = '9985'
 
     document.body.appendChild(glow)
 
     const move = (e: MouseEvent) => {
-      glow.style.left = e.clientX - 175 + 'px'
-      glow.style.top = e.clientY - 175 + 'px'
+      glow.style.left = e.clientX - 210 + 'px'
+      glow.style.top = e.clientY - 210 + 'px'
     }
 
     window.addEventListener('mousemove', move)
 
     return () => {
-      window.removeEventListener(
-        'mousemove',
-        move
-      )
-
+      window.removeEventListener('mousemove', move)
       glow.remove()
     }
-  }, [darkMode])
+  }, [])
 
-  /* LOADING SCREEN */
+  /* INTRO LOADING SCREEN */
   if (loading) {
     return (
-      <div className="
-      h-screen
-      bg-black
-      flex flex-col
-      items-center justify-center
-      overflow-hidden
-      ">
+      <div className="h-screen bg-[#050608] flex flex-col items-center justify-center overflow-hidden font-mono-code">
         <motion.div
-          initial={{
-            scale: 0.7,
-            opacity: 0,
-          }}
-          animate={{
-            scale: 1,
-            opacity: 1,
-          }}
-          transition={{
-            duration: 1,
-          }}
-          className="text-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="text-center px-4"
         >
-          <h1 className="
-          text-9xl
-          font-black
-          text-white
-          mb-8
-          tracking-tight
-          ">
-            ARI
+          <span className="text-amber-400 text-[10px] tracking-[0.4em] uppercase block mb-3">
+            {portfolioConfig.personal.year} BESPOKE PORTFOLIO
+          </span>
+          <h1 className="text-5xl sm:text-7xl font-black text-white tracking-tight mb-3">
+            {portfolioConfig.personal.nickname}
           </h1>
-
+          <p className="text-zinc-500 text-xs uppercase tracking-[0.25em] mb-6">
+            {portfolioConfig.personal.role}
+          </p>
           <motion.div
-            animate={{
-              width: ['0%', '100%'],
-            }}
-            transition={{
-              duration: 2,
-            }}
-            className="
-            h-1
-            bg-white
-            rounded-full
-            "
+            initial={{ width: 0 }}
+            animate={{ width: 160 }}
+            transition={{ duration: 0.7, ease: 'easeInOut' }}
+            className="h-[2px] bg-gradient-to-r from-amber-400 via-white to-cyan-400 rounded-full mx-auto"
           />
         </motion.div>
       </div>
@@ -236,232 +162,93 @@ export default function DesktopLayout() {
   }
 
   return (
-    <>
-      {/* FLOATING BACKGROUND */}
-      <div className="
-      fixed inset-0
-      -z-20
-      overflow-hidden
-      pointer-events-none
-      ">
-        <motion.div
-          animate={{
-            x: [0, 100, -100, 0],
-            y: [0, -50, 50, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-          }}
-          className="
-          absolute top-20 left-20
-          w-[500px] h-[500px]
-          bg-cyan-500/10
-          rounded-full
-          blur-[160px]
-          "
-        />
+    <div className="relative min-h-screen bg-[#050608] text-zinc-100 selection:bg-amber-400 selection:text-black overflow-x-hidden">
+      {/* SUBTLE GRAIN TEXTURE */}
+      <div className="subtle-grain" />
 
-        <motion.div
-          animate={{
-            x: [0, -120, 80, 0],
-            y: [0, 80, -60, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-          }}
-          className="
-          absolute bottom-20 right-20
-          w-[600px] h-[600px]
-          bg-purple-500/10
-          rounded-full
-          blur-[200px]
-          "
-        />
-      </div>
+      {/* AMBIENT MOVING VIDEO REEL BACKGROUND */}
+      <BackgroundVideo showControls={true} />
 
-      {/* MAIN */}
-      <main
-        className={`${
-          darkMode
-            ? 'bg-black text-white'
-            : 'bg-white text-black'
-        } transition-all duration-700 overflow-hidden`}
-      >
-        {/* AURORA */}
-        <div className="
-        fixed inset-0
-        -z-10
-        overflow-hidden
-        ">
-          <div className="
-          absolute top-0 left-1/3
-          w-[700px] h-[700px]
-          bg-purple-500
-          opacity-20
-          blur-[200px]
-          animate-pulse
-          rounded-full
-          " />
+      {/* TOP SCROLL PROGRESS BAR */}
+      <motion.div
+        style={{ scaleX }}
+        className="fixed top-0 left-0 right-0 h-[2px] origin-left z-[9999] bg-gradient-to-r from-amber-400 via-white to-cyan-400"
+      />
 
-          <div className="
-          absolute bottom-0 right-1/3
-          w-[600px] h-[600px]
-          bg-blue-500
-          opacity-20
-          blur-[200px]
-          animate-pulse
-          rounded-full
-          " />
+      {/* FLOATING NAVBAR */}
+      <AestheticNavbar
+        activeSection={activeSection}
+        navbarSmall={navbarSmall}
+        onOpenCommand={() => setCommandOpen(true)}
+      />
+
+      {/* COMMAND PALETTE */}
+      <CommandPalette
+        isOpen={commandOpen}
+        onClose={() => setCommandOpen(false)}
+      />
+
+      {/* COMPACT MAIN FLOW */}
+      <main className="relative z-10 overflow-hidden">
+        {/* HERO */}
+        <AestheticHero onOpenCommand={() => setCommandOpen(true)} />
+
+        {/* SECTION DIVIDER */}
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         </div>
 
-        {/* SCROLL PROGRESS */}
-        <motion.div
-          style={{ scaleX }}
-          className="
-          fixed top-0 left-0 right-0
-          h-[3px]
-          origin-left
-          z-[999]
-          bg-gradient-to-r
-          from-white
-          via-zinc-400
-          to-white
-          "
-        />
+        {/* BENTO HIGHLIGHTS */}
+        <AestheticHighlights />
 
-        {/* NAVBAR */}
-        <DesktopNavbar
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
-          activeSection={activeSection}
-          navbarSmall={navbarSmall}
-        />
-
-        {/* SPOTIFY */}
-        <div className="
-        fixed bottom-4 right-4
-        z-50
-        ">
-          <button
-            onClick={() =>
-              setShowSpotify(!showSpotify)
-            }
-            className="
-            mb-3 ml-auto
-            flex items-center gap-2
-            px-4 py-3
-            rounded-full
-            bg-black/70
-            backdrop-blur-2xl
-            border border-white/10
-            text-white
-            "
-          >
-            <Music2 size={18} />
-
-            {showSpotify
-              ? 'Hide Music'
-              : 'Open Music'}
-          </button>
-
-          {showSpotify && (
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 40,
-                scale: 0.95,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1,
-              }}
-              className="
-              w-[350px]
-              rounded-[2rem]
-              overflow-hidden
-              border border-white/10
-              bg-black/40
-              backdrop-blur-2xl
-              "
-            >
-              <div className="
-              p-4
-              border-b border-white/10
-              ">
-                <p className="
-                text-white
-                font-semibold
-                ">
-                  ARI Playlist
-                </p>
-
-                <p className="
-                text-zinc-400
-                text-sm
-                ">
-                  Music & Memories ✨
-                </p>
-              </div>
-
-              <iframe
-                src="https://open.spotify.com/embed/playlist/6caRQrbCGVw2K5JzgwsFhN"
-                width="100%"
-                height="152"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-              />
-            </motion.div>
-          )}
+        {/* SECTION DIVIDER */}
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         </div>
 
-        {/* SECTIONS */}
-       <DesktopHero />
+        {/* PROJECTS */}
+        <AestheticProjects />
 
-<DesktopAbout />
+        {/* SECTION DIVIDER */}
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
 
-<DesktopTimeline />
+        {/* ABOUT & SKILLS */}
+        <AestheticAbout />
 
-<DesktopGallery
-  gallery={gallery}
-  uploadedImage={uploadedImage}
-  setUploadedImage={setUploadedImage}
-/>
+        {/* SECTION DIVIDER */}
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
 
-<DesktopProjects />
+        {/* TIMELINE */}
+        <AestheticTimeline />
 
-<DesktopBlog />
+        {/* PHOTO GALLERY */}
+        <CinematicGallery />
 
-<DesktopContact />
-
-        {/* FOOTER */}
-        <footer
-          className="
-        border-t border-white/10
-        py-10 px-6
-        text-center
-        text-zinc-500
-        "
-        >
-          <div className="
-          flex items-center justify-center
-          gap-3 mb-4
-          ">
-            <Music2 size={18} />
-
-            <p>Music & Memories</p>
-          </div>
-
-          <p>
-            © 2026 by ARI — Apple Inspired
-            Website.
-          </p>
-        </footer>
+        {/* CONTACT & FOOTER */}
+        <AestheticContact />
       </main>
 
-      <AIAssistant />
-    </>
+      {/* FLOATING QUICK SCROLL-TO-TOP BUTTON */}
+      {showBackToTop && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          onClick={() => {
+            sound.playClick()
+            smoothScrollTo(0)
+          }}
+          className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-black/70 hover:bg-black/90 text-zinc-300 hover:text-white border border-white/15 backdrop-blur-xl shadow-2xl transition-all cursor-pointer group"
+          title="Scroll to Top"
+          aria-label="Scroll to top of page"
+        >
+          <ArrowUp size={16} className="group-hover:-translate-y-0.5 transition-transform" />
+        </motion.button>
+      )}
+    </div>
   )
 }

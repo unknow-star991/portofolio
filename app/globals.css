@@ -1,31 +1,175 @@
 @import "tailwindcss";
 
+/* ============================================================
+   CSS Custom Properties — Dark Luxury Portfolio
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050608;
+  --foreground: #f4f4f7;
+  --accent-gold: #f5c76c;
+  --accent-cyan: #38bdf8;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================================
+   Base: HTML & Body
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  min-height: 100dvh;
 }
 
-html,
-body {
-  overflow-x: hidden;
+/* ============================================================
+   Scroll anchor offset for fixed navbar
+   ============================================================ */
+[id] {
+  scroll-margin-top: 5rem;
+}
+
+/* ============================================================
+   Subtle Grain Texture Overlay
+   ============================================================ */
+.subtle-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ============================================================
+   Ambient Glow
+   ============================================================ */
+.ambient-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+      ellipse 80% 50% at 20% 20%,
+      color-mix(in srgb, var(--accent-gold) 6%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 80% 80%,
+      color-mix(in srgb, var(--accent-cyan) 4%, transparent),
+      transparent
+    );
+}
+
+/* ============================================================
+   Typography: Editorial Serif Display
+   ============================================================ */
+.font-display {
+  font-family: "Playfair Display", "Didot", "Bodoni MT", Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+/* ============================================================
+   Typography: Monospace Code
+   ============================================================ */
+.font-mono-code {
+  font-family: "JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code",
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+/* ============================================================
+   Modern Scrollbar
+   ============================================================ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 199, 108, 0.2) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(5, 6, 8, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(245, 199, 108, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 199, 108, 0.35);
+}
+
+/* ============================================================
+   Selection Colors
+   ============================================================ */
+::selection {
+  background-color: rgba(245, 199, 108, 0.3);
+  color: #000;
+}
+
+::-moz-selection {
+  background-color: rgba(245, 199, 108, 0.3);
+  color: #000;
+}
+
+/* ============================================================
+   Focus Visible — Keyboard Accessibility
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Section Divider Utility
+   ============================================================ */
+.section-divider {
+  position: relative;
+}
+
+.section-divider::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(80%, 640px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(245, 199, 108, 0.15) 25%,
+    rgba(56, 189, 248, 0.1) 75%,
+    transparent
+  );
+}
+
+/* ============================================================
+   Reduced Motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }
